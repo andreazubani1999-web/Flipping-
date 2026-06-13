@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flipping App</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f4f7fb;
+      color: #172033;
+    }
+
+    .app {
+      min-height: 100vh;
+      padding: 22px;
+      background:
+        radial-gradient(circle at top left, #22c55e33, transparent 32%),
+        radial-gradient(circle at top right, #3b82f633, transparent 35%),
+        linear-gradient(135deg, #f8fafc, #eef4ff);
+    }
+
+    .hidden { display: none; }
+
+    .top { margin-bottom: 22px; }
+
+    .label {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f9f8f;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 34px;
+      margin: 8px 0;
+      line-height: 1.05;
+    }
+
+    h2, h3 { margin: 0 0 8px; }
+
+    p {
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .subtitle {
+      color: #64748b;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .card, .reader-card {
+      background: white;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+      margin-bottom: 16px;
+      border: 1px solid rgba(255,255,255,0.8);
+    }
+
+    .section-card {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+      background: linear-gradient(135deg, #22c55e, #3b82f6);
+      flex-shrink: 0;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #172033;
+      color: white;
+      margin: 6px 6px 6px 0;
+      font-size: 14px;
+    }
+
+    .btn.light {
+      background: white;
+      color: #172033;
+      border: 1px solid #dbe4f0;
+    }
+
+    .btn.green { background: #16a34a; }
+    .btn.blue { background: #2563eb; }
+    .btn.danger { background: #ef4444; }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid #dbe4f0;
+      border-radius: 16px;
+      padding: 14px;
+      font-size: 16px;
+      margin: 8px 0;
+      font-family: inherit;
+      background: white;
+    }
+
+    textarea {
+      min-height: 160px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .page-item {
+      background: white;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 8px;
+    }
+
+    .breadcrumb {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+
+    .reader-title {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+
+    .reader-content {
+      white-space: pre-wrap;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #243047;
+    }
+
+    .empty {
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    .field-group {
+      margin-top: 22px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .field-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: #172033;
+    }
+
+    .info-row {
+      margin-bottom: 14px;
+    }
+
+    .info-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .info-value {
+      font-size: 16px;
+      color: #172033;
+      white-space: pre-wrap;
+      margin-top: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #075985;
+      font-weight: 800;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- HOME -->
+    <section id="home">
+      <div class="top">
+        <div class="label">Flipping Immobiliare</div>
+        <h1 id="homeTitle">Gestionale personale</h1>
+        <p class="subtitle" id="homeSubtitle">
+          Organizza teoria, immobili, fornitori e procedure.
+        </p>
+      </div>
+
+      <button class="btn blue" onclick="openHomeEdit()">Modifica homepage</button>
+      <button class="btn green" onclick="addHomeSection()">+ Nuova sezione</button>
+
+      <div id="homeSections"></div>
+    </section>
+
+    <!-- MODIFICA HOME -->
+    <section id="homeEdit" class="hidden">
+      <button class="btn light" onclick="goHome()">← Indietro</button>
+
+      <div class="card">
+        <h2>Modifica homepage</h2>
+        <input id="editHomeTitle" placeholder="Titolo homepage" oninput="saveHomeInfo()" />
+        <textarea id="editHomeSubtitle" placeholder="Descrizione homepage" oninput="saveHomeInfo()"></textarea>
+        <p class="small">Salvataggio automatico attivo.</p>
+      </div>
+    </section>
+
+    <!-- SEZIONE TEORIA -->
+    <section id="sectionView" class="hidden">
+      <button class="btn light" onclick="goHome()">← Home</button>
+
+      <div class="top">
+        <div class="label">Sezione</div>
+        <h1 id="sectionTitle"></h1>
+        <p class="subtitle" id="sectionDescription"></p>
+      </div>
+
+      <button class="btn blue" onclick="openSectionEdit()">Modifica sezione</button>
+      <button class="btn green" onclick="addPage(null)">+ Nuova pagina</button>
+
+      <div id="pagesList"></div>
+    </section>
+
+    <!-- MODIFICA SEZIONE -->
+    <section id="sectionEdit" class="hidden">
+      <button class="btn light" onclick="backToSection()">← Indietro</button>
+
+      <div class="card">
+        <h2>Modifica sezione</h2>
+        <input id="editSectionTitle" placeholder="Nome sezione" oninput="saveSectionEdit()" />
+        <input id="editSectionIcon" placeholder="Icona esempio: 📚" oninput="saveSectionEdit()" />
+        <textarea id="editSectionDescription" placeholder="Descrizione sezione" oninput="saveSectionEdit()"></textarea>
+        <button class="btn danger" onclick="deleteCurrentSection()">Elimina sezione</button>
+        <p class="small">Salvataggio automatico attivo.</p>
+      </div>
+    </section>
+
+    <!-- LETTURA PAGINA TEORIA -->
+    <section id="reader" class="hidden">
+      <button class="btn light" onclick="backToSection()">← Indietro</button>
+
+      <div class="breadcrumb" id="breadcrumb"></div>
+
+      <div class="reader-card">
+        <h1 class="reader-title" id="readerTitle"></h1>
+        <div class="reader-content" id="readerContent"></div>
+
+        <div class="actions">
+          <button class="btn blue" onclick="openEditor()">Modifica</button>
+          <button class="btn green" onclick="addSubPage()">+ Sottopagina</button>
+          <button class="btn danger" onclick="deleteCurrentPage()">Elimina</button>
+        </div>
+      </div>
+
+      <h3>Sottopagine</h3>
+      <div id="subPagesList"></div>
+    </section>
+
+    <!-- MODIFICA PAGINA TEORIA -->
+    <section id="editor" class="hidden">
+      <button class="btn light" onclick="openPage(currentPageId)">← Torna alla lettura</button>
+
+      <div class="card">
+        <h2>Modifica pagina</h2>
+        <input id="pageTitle" placeholder="Titolo pagina" oninput="saveCurrentPage()" />
+        <textarea id="pageContent" placeholder="Scrivi qui i tuoi appunti..." oninput="saveCurrentPage()"></textarea>
+        <p class="small">Salvataggio automatico attivo.</p>
+      </div>
+    </section>
+
+    <!-- IMMOBILI -->
+    <section id="propertiesView" class="hidden">
+      <button class="btn light" onclick="goHome()">← Home</button>
+
+      <div class="top">
+        <div class="label">Database</div>
+        <h1>🏠 Immobili</h1>
+        <p class="subtitle">Salva e confronta tutti gli immobili che andrai a visitare.</p>
+      </div>
+
+      <button class="btn green" onclick="addProperty()">+ Nuovo immobile</button>
+
+      <div id="propertiesList"></div>
+    </section>
+
+    <!-- LETTURA IMMOBILE -->
+    <section id="propertyReader" class="hidden">
+      <button class="btn light" onclick="openProperties()">← Immobili</button>
+
+      <div class="reader-card">
+        <h1 class="reader-title" id="propertyReaderTitle"></h1>
+        <div id="propertyReaderContent"></div>
+
+        <div class="actions">
+          <button class="btn blue" onclick="openPropertyEditor()">Modifica</button>
+          <button class="btn danger" onclick="deleteCurrentProperty()">Elimina immobile</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODIFICA IMMOBILE -->
+    <section id="propertyEditor" class="hidden">
+      <button class="btn light" onclick="openProperty(currentPropertyId)">← Torna alla scheda</button>
+
+      <div class="card">
+        <h2>Modifica immobile</h2>
+        <p class="small">Compila i dati. Il salvataggio è automatico.</p>
+
+        <div class="field-group">
+          <div class="field-title">Dati generali</div>
+          <input id="propTitle" placeholder="Nome immobile / titolo" oninput="saveCurrentProperty()" />
+          <input id="propAddress" placeholder="Indirizzo" oninput="saveCurrentProperty()" />
+          <input id="propArea" placeholder="Città / zona" oninput="saveCurrentProperty()" />
+          <input id="propLink" placeholder="Link annuncio" oninput="saveCurrentProperty()" />
+          <input id="propAgency" placeholder="Agenzia / proprietario" oninput="saveCurrentProperty()" />
+          <input id="propPhone" placeholder="Contatto telefono" oninput="saveCurrentProperty()" />
+          <input id="propVisitDate" type="date" oninput="saveCurrentProperty()" />
+          <select id="propStatus" onchange="saveCurrentProperty()">
+            <option>Da visitare</option>
+            <option>Visitato</option>
+            <option>In trattativa</option>
+            <option>Scartato</option>
+            <option>Acquistato</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <div class="field-title">Dati economici</div>
+          <input id="propPrice" placeholder="Prezzo richiesto" oninput="saveCurrentProperty()" />
+          <input id="propMaxOffer" placeholder="Prezzo massimo che posso offrire" oninput="saveCurrentProperty()" />
+          <input id="propWorks" placeholder="Stima lavori" oninput="saveCurrentProperty()" />
+          <input id="propAgencyCost" placeholder="Spese agenzia" oninput="saveCurrentProperty()" />
+          <input id="propTaxes" placeholder="Spese notaio / imposte" oninput="saveCurrentProperty()" />
+          <input id="propResale" placeholder="Prezzo rivendita stimato" oninput="saveCurrentProperty()" />
+          <input id="propMargin" placeholder="Margine previsto" oninput="saveCurrentProperty()" />
+          <input id="propRoi" placeholder="ROI stimato" oninput="saveCurrentProperty()" />
+        </div>
+
+        <div class="field-group">
+          <div class="field-title">Caratteristiche immobile</div>
+          <input id="propSqm" placeholder="Metri quadri" oninput="saveCurrentProperty()" />
+          <input id="propFloor" placeholder="Piano" oninput="saveCurrentProperty()" />
+          <select id="propElevator" onchange="saveCurrentProperty()">
+            <option>Ascensore: non indicato</option>
+            <option>Ascensore: sì</option>
+            <option>Ascensore: no</option>
+          </select>
+          <input id="propRooms" placeholder="Numero locali" oninput="saveCurrentProperty()" />
+          <input id="propBathrooms" placeholder="Bagni" oninput="saveCurrentProperty()" />
+          <input id="propCellar" placeholder="Cantina" oninput="saveCurrentProperty()" />
+          <input id="propGarage" placeholder="Box / posto auto" oninput="saveCurrentProperty()" />
+          <input id="propEnergy" placeholder="Classe energetica" oninput="saveCurrentProperty()" />
+          <textarea id="propInternalState" placeholder="Stato interno" oninput="saveCurrentProperty()"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="field-title">Analisi flipping</div>
+          <textarea id="propTransformation" placeholder="Potenziale trasformazione" oninput="saveCurrentProperty()"></textarea>
+          <textarea id="propTarget" placeholder="Possibile target acquirente" oninput="saveCurrentProperty()"></textarea>
+          <textarea id="propStrengths" placeholder="Punti forti" oninput="saveCurrentProperty()"></textarea>
+          <textarea id="propWeaknesses" placeholder="Punti deboli" oninput="saveCurrentProperty()"></textarea>
+          <textarea id="propRisks" placeholder="Rischi" oninput="saveCurrentProperty()"></textarea>
+          <textarea id="propNotes" placeholder="Note sopralluogo" oninput="saveCurrentProperty()"></textarea>
+          <textarea id="propDocuments" placeholder="Documenti da controllare" oninput="saveCurrentProperty()"></textarea>
+          <textarea id="propDecision" placeholder="Decisione finale" oninput="saveCurrentProperty()"></textarea>
+        </div>
+
+        <p class="small">Salvataggio automatico attivo.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    let appData = JSON.parse(localStorage.getItem("flipping_app_v3")) || {
+      home: {
+        title: "Gestionale personale",
+        subtitle: "Organizza teoria, immobili, fornitori e procedure."
+      },
+      sections: [
+        {
+          id: "teoria",
+          type: "theory",
+          title: "Teoria",
+          icon: "📚",
+          description: "Appunti, fasi operative, strategie e checklist."
+        },
+        {
+          id: "immobili",
+          type: "properties",
+          title: "Immobili",
+          icon: "🏠",
+          description: "Database degli immobili visitati, da valutare e in trattativa."
+        }
+      ],
+      pages: [
+        {
+          id: crypto.randomUUID(),
+          sectionId: "teoria",
+          parentId: null,
+          title: "Analisi immobile",
+          content: "Qui puoi scrivere la teoria sull'analisi dell'immobile.\n\nEsempio:\n- Analisi zona\n- Prezzo al mq\n- Stato interno\n- Documenti\n- Margine\n- Strategia di rivendita"
+        },
+        {
+          id: crypto.randomUUID(),
+          sectionId: "teoria",
+          parentId: null,
+          title: "Ristrutturazione",
+          content: "Qui puoi scrivere tutto il processo di ristrutturazione.\n\nEsempio:\n- Demolizioni\n- Impianto elettrico\n- Impianto idraulico\n- Bagno\n- Cucina\n- Pavimenti\n- Serramenti\n- Finiture"
+        }
+      ],
+      properties: []
+    };
+
+    if (!appData.properties) appData.properties = [];
+
+    if (!appData.sections.find(s => s.id === "immobili")) {
+      appData.sections.push({
+        id: "immobili",
+        type: "properties",
+        title: "Immobili",
+        icon: "🏠",
+        description: "Database degli immobili visitati, da valutare e in trattativa."
+      });
+    }
+
+    let currentSectionId = null;
+    let currentPageId = null;
+    let currentPropertyId = null;
+
+    function save() {
+      localStorage.setItem("flipping_app_v3", JSON.stringify(appData));
+    }
+
+    function show(id) {
+      [
+        "home", "homeEdit", "sectionView", "sectionEdit", "reader", "editor",
+        "propertiesView", "propertyReader", "propertyEditor"
+      ].forEach(section => {
+        document.getElementById(section).classList.add("hidden");
+      });
+
+      document.getElementById(id).classList.remove("hidden");
+    }
+
+    function goHome() {
+      renderHome();
+      show("home");
+    }
+
+    function renderHome() {
+      document.getElementById("homeTitle").innerText = appData.home.title;
+      document.getElementById("homeSubtitle").innerText = appData.home.subtitle;
+
+      const container = document.getElementById("homeSections");
+      container.innerHTML = "";
+
+      appData.sections.forEach(section => {
+        let countText = "";
+
+        if (section.type === "properties") {
+          countText = appData.properties.length + " immobili salvati";
+        } else {
+          const pagesCount = appData.pages.filter(p => p.sectionId === section.id && p.parentId === null).length;
+          countText = pagesCount + " pagine principali";
+        }
+
+        const div = document.createElement("div");
+        div.className = "card section-card";
+        div.onclick = () => {
+          if (section.type === "properties") {
+            openProperties();
+          } else {
+            openSection(section.id);
+          }
+        };
+
+        div.innerHTML = `
+          <div class="icon">${section.icon}</div>
+          <div>
+            <h2>${section.title}</h2>
+            <p>${section.description}</p>
+            <p class="small">${countText}</p>
+          </div>
+        `;
+
+        container.appendChild(div);
+      });
+    }
+
+    function openHomeEdit() {
+      document.getElementById("editHomeTitle").value = appData.home.title;
+      document.getElementById("editHomeSubtitle").value = appData.home.subtitle;
+      show("homeEdit");
+    }
+
+    function saveHomeInfo() {
+      appData.home.title = document.getElementById("editHomeTitle").value;
+      appData.home.subtitle = document.getElementById("editHomeSubtitle").value;
+      save();
+    }
+
+    function addHomeSection() {
+      const title = prompt("Nome della nuova sezione:");
+      if (!title) return;
+
+      appData.sections.push({
+        id: crypto.randomUUID(),
+        type: "theory",
+        title,
+        icon: "📁",
+        description: "Nuova sezione personalizzabile."
+      });
+
+      save();
+      renderHome();
+    }
+
+    function openSection(id) {
+      currentSectionId = id;
+      const section = appData.sections.find(s => s.id === id);
+
+      document.getElementById("sectionTitle").innerText = section.icon + " " + section.title;
+      document.getElementById("sectionDescription").innerText = section.description;
+
+      renderPages();
+      show("sectionView");
+    }
+
+    function backToSection() {
+      openSection(currentSectionId);
+    }
+
+    function openSectionEdit() {
+      const section = appData.sections.find(s => s.id === currentSectionId);
+
+      document.getElementById("editSectionTitle").value = section.title;
+      document.getElementById("editSectionIcon").value = section.icon;
+      document.getElementById("editSectionDescription").value = section.description;
+
+      show("sectionEdit");
+    }
+
+    function saveSectionEdit() {
+      const section = appData.sections.find(s => s.id === currentSectionId);
+
+      section.title = document.getElementById("editSectionTitle").value;
+      section.icon = document.getElementById("editSectionIcon").value;
+      section.description = document.getElementById("editSectionDescription").value;
+
+      save();
+    }
+
+    function deleteCurrentSection() {
+      const section = appData.sections.find(s => s.id === currentSectionId);
+
+      if (section.id === "teoria" || section.id === "immobili") {
+        alert("Questa sezione principale non può essere eliminata.");
+        return;
+      }
+
+      if (!confirm("Vuoi eliminare questa sezione e tutte le sue pagine?")) return;
+
+      appData.sections = appData.sections.filter(s => s.id !== currentSectionId);
+      appData.pages = appData.pages.filter(p => p.sectionId !== currentSectionId);
+
+      save();
+      goHome();
+    }
+
+    function addPage(parentId) {
+      const title = prompt("Nome della nuova pagina:");
+      if (!title) return;
+
+      appData.pages.push({
+        id: crypto.randomUUID(),
+        sectionId: currentSectionId,
+        parentId,
+        title,
+        content: ""
+      });
+
+      save();
+
+      if (parentId) openPage(parentId);
+      else renderPages();
+    }
+
+    function renderPages() {
+      const list = document.getElementById("pagesList");
+      const pages = appData.pages.filter(p => p.sectionId === currentSectionId && p.parentId === null);
+
+      list.innerHTML = "";
+
+      if (pages.length === 0) {
+        list.innerHTML = "<p class='empty'>Nessuna pagina creata.</p>";
+        return;
+      }
+
+      pages.forEach(page => {
+        const children = appData.pages.filter(p => p.parentId === page.id);
+
+        const div = document.createElement("div");
+        div.className = "page-item";
+        div.onclick = () => openPage(page.id);
+
+        div.innerHTML = `
+          <h3>📄 ${page.title}</h3>
+          <p>${children.length} sottopagine</p>
+        `;
+
+        list.appendChild(div);
+      });
+    }
+
+    function openPage(id) {
+      currentPageId = id;
+
+      const page = appData.pages.find(p => p.id === id);
+      if (!page) return;
+
+      document.getElementById("readerTitle").innerText = page.title;
+      document.getElementById("readerContent").innerText = page.content || "Questa pagina è vuota. Premi Modifica per aggiungere testo.";
+
+      renderBreadcrumb(page);
+      renderSubPages(page.id);
+
+      show("reader");
+    }
+
+    function openEditor() {
+      const page = appData.pages.find(p => p.id === currentPageId);
+
+      document.getElementById("pageTitle").value = page.title;
+      document.getElementById("pageContent").value = page.content;
+
+      show("editor");
+    }
+
+    function saveCurrentPage() {
+      const page = appData.pages.find(p => p.id === currentPageId);
+
+      page.title = document.getElementById("pageTitle").value;
+      page.content = document.getElementById("pageContent").value;
+
+      save();
+    }
+
+    function addSubPage() {
+      addPage(currentPageId);
+    }
+
+    function renderSubPages(parentId) {
+      const list = document.getElementById("subPagesList");
+      const children = appData.pages.filter(p => p.parentId === parentId);
+
+      list.innerHTML = "";
+
+      if (children.length === 0) {
+        list.innerHTML = "<p class='empty'>Nessuna sottopagina.</p>";
+        return;
+      }
+
+      children.forEach(page => {
+        const div = document.createElement("div");
+        div.className = "page-item";
+        div.onclick = () => openPage(page.id);
+
+        div.innerHTML = `
+          <h3>↳ ${page.title}</h3>
+          <p>Apri come pagina libro</p>
+        `;
+
+        list.appendChild(div);
+      });
+    }
+
+    function deleteCurrentPage() {
+      if (!confirm("Vuoi eliminare questa pagina e tutte le sottopagine?")) return;
+
+      const idsToDelete = getAllChildrenIds(currentPageId);
+      idsToDelete.push(currentPageId);
+
+      appData.pages = appData.pages.filter(p => !idsToDelete.includes(p.id));
+
+      save();
+      backToSection();
+    }
+
+    function getAllChildrenIds(parentId) {
+      let ids = [];
+      const children = appData.pages.filter(p => p.parentId === parentId);
+
+      children.forEach(child => {
+        ids.push(child.id);
+        ids = ids.concat(getAllChildrenIds(child.id));
+      });
+
+      return ids;
+    }
+
+    function renderBreadcrumb(page) {
+      const path = [];
+      let current = page;
+
+      while (current) {
+        path.unshift(current.title);
+        current = appData.pages.find(p => p.id === current.parentId);
+      }
+
+      const section = appData.sections.find(s => s.id === currentSectionId);
+      document.getElementById("breadcrumb").innerText = section.title + " / " + path.join(" / ");
+    }
+
+    function openProperties() {
+      renderProperties();
+      show("propertiesView");
+    }
+
+    function addProperty() {
+      const newProperty = {
+        id: crypto.randomUUID(),
+        title: "Nuovo immobile",
+        address: "",
+        area: "",
+        link: "",
+        agency: "",
+        phone: "",
+        visitDate: "",
+        status: "Da visitare",
+        price: "",
+        maxOffer: "",
+        works: "",
+        agencyCost: "",
+        taxes: "",
+        resale: "",
+        margin: "",
+        roi: "",
+        sqm: "",
+        floor: "",
+        elevator: "Ascensore: non indicato",
+        rooms: "",
+        bathrooms: "",
+        cellar: "",
+        garage: "",
+        energy: "",
+        internalState: "",
+        transformation: "",
+        target: "",
+        strengths: "",
+        weaknesses: "",
+        risks: "",
+        notes: "",
+        documents: "",
+        decision: ""
+      };
+
+      appData.properties.push(newProperty);
+      save();
+      currentPropertyId = newProperty.id;
+      openPropertyEditor();
+    }
+
+    function renderProperties() {
+      const list = document.getElementById("propertiesList");
+      list.innerHTML = "";
+
+      if (appData.properties.length === 0) {
+        list.innerHTML = "<p class='empty'>Nessun immobile salvato. Premi + Nuovo immobile.</p>";
+        return;
+      }
+
+      appData.properties.forEach(prop => {
+        const div = document.createElement("div");
+        div.className = "page-item";
+        div.onclick = () => openProperty(prop.id);
+
+        div.innerHTML = `
+          <h3>🏠 ${prop.title || "Immobile senza nome"}</h3>
+          <p>${prop.area || "Zona non inserita"}</p>
+          <span class="badge">${prop.status || "Da visitare"}</span>
+          <p class="small">Prezzo: ${prop.price || "-"} · Margine: ${prop.margin || "-"} · Visita: ${prop.visitDate || "-"}</p>
+        `;
+
+        list.appendChild(div);
+      });
+    }
+
+    function openProperty(id) {
+      currentPropertyId = id;
+      const prop = appData.properties.find(p => p.id === id);
+      if (!prop) return;
+
+      document.getElementById("propertyReaderTitle").innerText = "🏠 " + (prop.title || "Immobile senza nome");
+
+      document.getElementById("propertyReaderContent").innerHTML = `
+        ${renderInfoGroup("Dati generali", [
+          ["Indirizzo", prop.address],
+          ["Città / zona", prop.area],
+          ["Link annuncio", prop.link],
+          ["Agenzia / proprietario", prop.agency],
+          ["Telefono", prop.phone],
+          ["Data visita", prop.visitDate],
+          ["Stato", prop.status]
+        ])}
+
+        ${renderInfoGroup("Dati economici", [
+          ["Prezzo richiesto", prop.price],
+          ["Prezzo massimo offerta", prop.maxOffer],
+          ["Stima lavori", prop.works],
+          ["Spese agenzia", prop.agencyCost],
+          ["Notaio / imposte", prop.taxes],
+          ["Prezzo rivendita stimato", prop.resale],
+          ["Margine previsto", prop.margin],
+          ["ROI stimato", prop.roi]
+        ])}
+
+        ${renderInfoGroup("Caratteristiche immobile", [
+          ["Metri quadri", prop.sqm],
+          ["Piano", prop.floor],
+          ["Ascensore", prop.elevator],
+          ["Numero locali", prop.rooms],
+          ["Bagni", prop.bathrooms],
+          ["Cantina", prop.cellar],
+          ["Box / posto auto", prop.garage],
+          ["Classe energetica", prop.energy],
+          ["Stato interno", prop.internalState]
+        ])}
+
+        ${renderInfoGroup("Analisi flipping", [
+          ["Potenziale trasformazione", prop.transformation],
+          ["Target acquirente", prop.target],
+          ["Punti forti", prop.strengths],
+          ["Punti deboli", prop.weaknesses],
+          ["Rischi", prop.risks],
+          ["Note sopralluogo", prop.notes],
+          ["Documenti da controllare", prop.documents],
+          ["Decisione finale", prop.decision]
+        ])}
+      `;
+
+      show("propertyReader");
+    }
+
+    function renderInfoGroup(title, rows) {
+      return `
+        <div class="field-group">
+          <div class="field-title">${title}</div>
+          ${rows.map(row => `
+            <div class="info-row">
+              <div class="info-label">${row[0]}</div>
+              <div class="info-value">${row[1] || "-"}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function openPropertyEditor() {
+      const prop = appData.properties.find(p => p.id === currentPropertyId);
+      if (!prop) return;
+
+      const fields = {
+        propTitle: "title",
+        propAddress: "address",
+        propArea: "area",
+        propLink: "link",
+        propAgency: "agency",
+        propPhone: "phone",
+        propVisitDate: "visitDate",
+        propStatus: "status",
+        propPrice: "price",
+        propMaxOffer: "maxOffer",
+        propWorks: "works",
+        propAgencyCost: "agencyCost",
+        propTaxes: "taxes",
+        propResale: "resale",
+        propMargin: "margin",
+        propRoi: "roi",
+        propSqm: "sqm",
+        propFloor: "floor",
+        propElevator: "elevator",
+        propRooms: "rooms",
+        propBathrooms: "bathrooms",
+        propCellar: "cellar",
+        propGarage: "garage",
+        propEnergy: "energy",
+        propInternalState: "internalState",
+        propTransformation: "transformation",
+        propTarget: "target",
+        propStrengths: "strengths",
+        propWeaknesses: "weaknesses",
+        propRisks: "risks",
+        propNotes: "notes",
+        propDocuments: "documents",
+        propDecision: "decision"
+      };
+
+      Object.keys(fields).forEach(inputId => {
+        document.getElementById(inputId).value = prop[fields[inputId]] || "";
+      });
+
+      show("propertyEditor");
+    }
+
+    function saveCurrentProperty() {
+      const prop = appData.properties.find(p => p.id === currentPropertyId);
+      if (!prop) return;
+
+      prop.title = document.getElementById("propTitle").value;
+      prop.address = document.getElementById("propAddress").value;
+      prop.area = document.getElementById("propArea").value;
+      prop.link = document.getElementById("propLink").value;
+      prop.agency = document.getElementById("propAgency").value;
+      prop.phone = document.getElementById("propPhone").value;
+      prop.visitDate = document.getElementById("propVisitDate").value;
+      prop.status = document.getElementById("propStatus").value;
+
+      prop.price = document.getElementById("propPrice").value;
+      prop.maxOffer = document.getElementById("propMaxOffer").value;
+      prop.works = document.getElementById("propWorks").value;
+      prop.agencyCost = document.getElementById("propAgencyCost").value;
+      prop.taxes = document.getElementById("propTaxes").value;
+      prop.resale = document.getElementById("propResale").value;
+      prop.margin = document.getElementById("propMargin").value;
+      prop.roi = document.getElementById("propRoi").value;
+
+      prop.sqm = document.getElementById("propSqm").value;
+      prop.floor = document.getElementById("propFloor").value;
+      prop.elevator = document.getElementById("propElevator").value;
+      prop.rooms = document.getElementById("propRooms").value;
+      prop.bathrooms = document.getElementById("propBathrooms").value;
+      prop.cellar = document.getElementById("propCellar").value;
+      prop.garage = document.getElementById("propGarage").value;
+      prop.energy = document.getElementById("propEnergy").value;
+      prop.internalState = document.getElementById("propInternalState").value;
+
+      prop.transformation = document.getElementById("propTransformation").value;
+      prop.target = document.getElementById("propTarget").value;
+      prop.strengths = document.getElementById("propStrengths").value;
+      prop.weaknesses = document.getElementById("propWeaknesses").value;
+      prop.risks = document.getElementById("propRisks").value;
+      prop.notes = document.getElementById("propNotes").value;
+      prop.documents = document.getElementById("propDocuments").value;
+      prop.decision = document.getElementById("propDecision").value;
+
+      save();
+    }
+
+    function deleteCurrentProperty() {
+      if (!confirm("Vuoi eliminare questo immobile?")) return;
+
+      appData.properties = appData.properties.filter(p => p.id !== currentPropertyId);
+      save();
+      openProperties();
+    }
+
+    save();
+    renderHome();
+  </script>
+</body>
+</html>
