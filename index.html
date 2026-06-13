@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flipping App</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f4f7fb;color:#172033}.app{min-height:100vh;padding:22px;background:radial-gradient(circle at top left,#22c55e33,transparent 32%),radial-gradient(circle at top right,#3b82f633,transparent 35%),linear-gradient(135deg,#f8fafc,#eef4ff)}.hidden{display:none}.top{margin-bottom:22px}.label{font-size:13px;font-weight:800;color:#0f9f8f;letter-spacing:1px;text-transform:uppercase}h1{font-size:34px;margin:8px 0;line-height:1.05}h2,h3{margin:0 0 8px}p{color:#64748b;line-height:1.5}.subtitle{color:#64748b;font-size:16px}.card,.reader-card{background:white;border-radius:24px;padding:22px;box-shadow:0 18px 45px rgba(15,23,42,.12);margin-bottom:16px;border:1px solid rgba(255,255,255,.8)}.section-card{display:flex;gap:16px;align-items:center;cursor:pointer}.icon{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;font-size:30px;background:linear-gradient(135deg,#22c55e,#3b82f6);flex-shrink:0}.btn{border:none;border-radius:14px;padding:12px 16px;font-weight:700;cursor:pointer;background:#172033;color:white;margin:6px 6px 6px 0;font-size:14px}.btn.light{background:white;color:#172033;border:1px solid #dbe4f0}.btn.green{background:#16a34a}.btn.blue{background:#2563eb}.btn.danger{background:#ef4444}input,textarea,select{width:100%;border:1px solid #dbe4f0;border-radius:16px;padding:14px;font-size:16px;margin:6px 0 14px;font-family:inherit;background:white}textarea{min-height:120px;resize:vertical;line-height:1.6}.field-label{font-size:13px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.4px;margin-top:10px}.item{background:white;border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 8px 25px rgba(15,23,42,.08);border:1px solid #e2e8f0;cursor:pointer}.actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.small{font-size:13px;color:#94a3b8;margin-top:8px}.breadcrumb{font-size:14px;color:#64748b;margin-bottom:12px}.reader-title{font-size:32px;margin-bottom:16px}.reader-content{white-space:pre-wrap;font-size:17px;line-height:1.7;color:#243047}.empty{color:#94a3b8;font-style:italic}.field-group{margin-top:22px;padding-top:12px;border-top:1px solid #e2e8f0}.field-title{font-size:18px;font-weight:800;margin-bottom:10px;color:#172033}.info-row{margin-bottom:14px}.info-label{font-size:13px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.5px}.info-value{font-size:16px;color:#172033;white-space:pre-wrap;margin-top:4px}.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#e0f2fe;color:#075985;font-weight:800;font-size:13px;margin-top:6px}.readonly{background:#f8fafc;color:#475569}.checkrow{display:flex;gap:10px;align-items:center;margin:10px 0;color:#172033}.checkrow input{width:auto;margin:0}
+</style>
+</head>
+<body>
+<div class="app">
+
+<section id="home">
+<div class="top"><div class="label">Flipping Immobiliare</div><h1 id="homeTitle"></h1><p class="subtitle" id="homeSubtitle"></p></div>
+<button class="btn blue" onclick="openHomeEdit()">Modifica homepage</button>
+<button class="btn green" onclick="addCustomSection()">+ Nuova sezione</button>
+<div id="homeSections"></div>
+</section>
+
+<section id="homeEdit" class="hidden">
+<button class="btn light" onclick="goHome()">← Indietro</button>
+<div class="card"><h2>Modifica homepage</h2><div class="field-label">Titolo homepage</div><input id="editHomeTitle" oninput="saveHomeInfo()"><div class="field-label">Descrizione homepage</div><textarea id="editHomeSubtitle" oninput="saveHomeInfo()"></textarea></div>
+</section>
+
+<section id="sectionView" class="hidden">
+<button class="btn light" onclick="goHome()">← Home</button>
+<div class="top"><div class="label">Sezione</div><h1 id="sectionTitle"></h1><p class="subtitle" id="sectionDescription"></p></div>
+<button class="btn blue" onclick="openSectionEdit()">Modifica sezione</button><button class="btn green" onclick="addPage(null)">+ Nuova pagina</button><div id="pagesList"></div>
+</section>
+
+<section id="sectionEdit" class="hidden">
+<button class="btn light" onclick="backToSection()">← Indietro</button>
+<div class="card"><h2>Modifica sezione</h2><div class="field-label">Nome sezione</div><input id="editSectionTitle" oninput="saveSectionEdit()"><div class="field-label">Icona</div><input id="editSectionIcon" oninput="saveSectionEdit()"><div class="field-label">Descrizione</div><textarea id="editSectionDescription" oninput="saveSectionEdit()"></textarea><button class="btn danger" onclick="deleteCurrentSection()">Elimina sezione</button></div>
+</section>
+
+<section id="reader" class="hidden">
+<button class="btn light" onclick="backToSection()">← Indietro</button><div class="breadcrumb" id="breadcrumb"></div>
+<div class="reader-card"><h1 class="reader-title" id="readerTitle"></h1><div class="reader-content" id="readerContent"></div><div class="actions"><button class="btn blue" onclick="openEditor()">Modifica</button><button class="btn green" onclick="addSubPage()">+ Sottopagina</button><button class="btn danger" onclick="deleteCurrentPage()">Elimina</button></div></div>
+<h3>Sottopagine</h3><div id="subPagesList"></div>
+</section>
+
+<section id="editor" class="hidden">
+<button class="btn light" onclick="openPage(currentPageId)">← Torna alla lettura</button>
+<div class="card"><h2>Modifica pagina</h2><div class="field-label">Titolo pagina</div><input id="pageTitle" oninput="saveCurrentPage()"><div class="field-label">Contenuto</div><textarea id="pageContent" oninput="saveCurrentPage()"></textarea></div>
+</section>
+
+<section id="propertiesView" class="hidden">
+<button class="btn light" onclick="goHome()">← Home</button><div class="top"><div class="label">Database</div><h1>🏠 Immobili</h1><p class="subtitle">Salva e confronta gli immobili che visiterai.</p></div>
+<button class="btn green" onclick="addProperty()">+ Nuovo immobile</button><div id="propertiesList"></div>
+</section>
+
+<section id="propertyReader" class="hidden">
+<button class="btn light" onclick="openProperties()">← Immobili</button><div class="reader-card"><h1 class="reader-title" id="propertyReaderTitle"></h1><div id="propertyReaderContent"></div><div class="actions"><button class="btn blue" onclick="openPropertyEditor()">Modifica</button><button class="btn danger" onclick="deleteCurrentProperty()">Elimina immobile</button></div></div>
+</section>
+
+<section id="propertyEditor" class="hidden">
+<button class="btn light" onclick="openProperty(currentPropertyId)">← Torna alla scheda</button><div class="card"><h2>Modifica immobile</h2><p class="small">Il ROI si calcola automaticamente.</p><div id="propertyForm"></div></div>
+</section>
+
+<section id="professionalsView" class="hidden">
+<button class="btn light" onclick="goHome()">← Home</button><div class="top"><div class="label">Database</div><h1>👷 Professionisti</h1><p class="subtitle">Organizza tecnici, artigiani, imprese, agenzie e preventivi.</p></div>
+<button class="btn green" onclick="addProCategory()">+ Nuova categoria</button><div id="proCategoriesList"></div>
+</section>
+
+<section id="proCategoryView" class="hidden">
+<button class="btn light" onclick="openProfessionals()">← Professionisti</button><div class="top"><div class="label">Categoria</div><h1 id="proCategoryTitle"></h1></div>
+<button class="btn blue" onclick="renameProCategory()">Rinomina categoria</button><button class="btn green" onclick="addProfessional()">+ Nuovo professionista</button><button class="btn danger" onclick="deleteProCategory()">Elimina categoria</button><div id="professionalsList"></div>
+</section>
+
+<section id="professionalReader" class="hidden">
+<button class="btn light" onclick="openProCategory(currentProCategoryId)">← Categoria</button><div class="reader-card"><h1 class="reader-title" id="professionalReaderTitle"></h1><div id="professionalReaderContent"></div><div class="actions"><button class="btn blue" onclick="openProfessionalEditor()">Modifica</button><button class="btn danger" onclick="deleteCurrentProfessional()">Elimina professionista</button></div></div>
+</section>
+
+<section id="professionalEditor" class="hidden">
+<button class="btn light" onclick="openProfessional(currentProfessionalId)">← Torna alla scheda</button><div class="card"><h2>Modifica professionista</h2><div id="professionalForm"></div></div>
+</section>
+
+<section id="businessView" class="hidden">
+<button class="btn light" onclick="goHome()">← Home</button><div class="top"><div class="label">Centro decisionale</div><h1>📊 Business Plan</h1><p class="subtitle">Analizza ogni operazione completa con ROI, ROE, margini e rischio.</p></div>
+<button class="btn green" onclick="addBusiness()">+ Nuovo Business Plan</button><div id="businessList"></div>
+</section>
+
+<section id="businessReader" class="hidden">
+<button class="btn light" onclick="openBusinessPlans()">← Business Plan</button><div class="reader-card"><h1 class="reader-title" id="businessReaderTitle"></h1><div id="businessReaderContent"></div><div class="actions"><button class="btn blue" onclick="openBusinessEditor()">Modifica</button><button class="btn danger" onclick="deleteCurrentBusiness()">Elimina Business Plan</button></div></div>
+</section>
+
+<section id="businessEditor" class="hidden">
+<button class="btn light" onclick="openBusiness(currentBusinessId)">← Torna alla scheda</button><div class="card"><h2>Modifica Business Plan</h2><p class="small">Tutti i calcoli si aggiornano automaticamente.</p><div id="businessForm"></div></div>
+</section>
+
+</div>
+
+<script>
+let appData=JSON.parse(localStorage.getItem("flipping_app_v5"))||{
+home:{title:"Gestionale personale",subtitle:"Organizza teoria, immobili, professionisti, business plan e procedure."},
+sections:[
+{id:"teoria",type:"theory",title:"Teoria",icon:"📚",description:"Appunti, fasi operative, strategie e checklist."},
+{id:"immobili",type:"properties",title:"Immobili",icon:"🏠",description:"Database degli immobili visitati, da valutare e in trattativa."},
+{id:"professionisti",type:"professionals",title:"Professionisti",icon:"👷",description:"Database di tecnici, imprese, artigiani, agenzie e preventivi."},
+{id:"business",type:"business",title:"Business Plan",icon:"📊",description:"Analisi economica completa delle operazioni di flipping."}
+],
+pages:[
+{id:crypto.randomUUID(),sectionId:"teoria",parentId:null,title:"Analisi immobile",content:"- Analisi zona\n- Prezzo al mq\n- Stato interno\n- Documenti\n- Margine\n- Strategia di rivendita"},
+{id:crypto.randomUUID(),sectionId:"teoria",parentId:null,title:"Ristrutturazione",content:"- Demolizioni\n- Impianti\n- Bagno\n- Cucina\n- Pavimenti\n- Serramenti\n- Finiture"}
+],
+properties:[],professionals:[],businessPlans:[],
+proCategories:["Geometra","Architetto","Aziende edili","Agenzie immobiliari","Idraulici","Elettricisti","Piastrellisti","Falegname","Serramentisti","Imbianchini","Cartongessisti","Notaio","Commercialista","Home stager / rendering","Altro"].map(name=>({id:crypto.randomUUID(),name}))
+};
+
+["properties","professionals","businessPlans","proCategories","pages","sections"].forEach(k=>{if(!appData[k])appData[k]=[]});
+if(!appData.sections.find(s=>s.id==="business"))appData.sections.push({id:"business",type:"business",title:"Business Plan",icon:"📊",description:"Analisi economica completa delle operazioni di flipping."});
+if(!appData.sections.find(s=>s.id==="professionisti"))appData.sections.push({id:"professionisti",type:"professionals",title:"Professionisti",icon:"👷",description:"Database professionisti."});
+if(!appData.sections.find(s=>s.id==="immobili"))appData.sections.push({id:"immobili",type:"properties",title:"Immobili",icon:"🏠",description:"Database immobili."});
+
+let currentSectionId=null,currentPageId=null,currentPropertyId=null,currentProCategoryId=null,currentProfessionalId=null,currentBusinessId=null;
+
+const propertyFields=[
+["Dati generali",[["title","Nome immobile / titolo","input"],["address","Indirizzo","input"],["area","Città / zona","input"],["link","Link annuncio","input"],["agency","Agenzia / proprietario","input"],["phone","Contatto telefono","input"],["visitDate","Data visita","date"],["status","Stato","select",["Da visitare","Visitato","In trattativa","Scartato","Acquistato"]]]],
+["Dati economici",[["price","Prezzo richiesto","input"],["maxOffer","Prezzo massimo che posso offrire","input"],["works","Stima lavori","input"],["agencyCost","Spese agenzia","input"],["taxes","Spese notaio / imposte","input"],["resale","Prezzo rivendita stimato","input"],["totalInvestment","Investimento totale automatico","readonly"],["margin","Margine previsto automatico","readonly"],["roi","ROI stimato automatico","readonly"]]],
+["Caratteristiche immobile",[["sqm","Metri quadri","input"],["floor","Piano","input"],["elevator","Ascensore","select",["Non indicato","Sì","No"]],["rooms","Numero locali","input"],["bathrooms","Bagni","input"],["cellar","Cantina","input"],["garage","Box / posto auto","input"],["energy","Classe energetica","input"],["internalState","Stato interno","textarea"]]],
+["Analisi flipping",[["transformation","Potenziale trasformazione","textarea"],["target","Possibile target acquirente","textarea"],["strengths","Punti forti","textarea"],["weaknesses","Punti deboli","textarea"],["risks","Rischi","textarea"],["notes","Note sopralluogo","textarea"],["documents","Documenti da controllare","textarea"],["decision","Decisione finale","textarea"]]]
+];
+
+const professionalFields=[
+["Dati generali",[["name","Nome professionista / azienda","input"],["categoryName","Categoria","readonly"],["referent","Referente","input"],["phone","Telefono","input"],["email","Email","input"],["website","Sito web","input"],["address","Indirizzo","input"],["area","Zona operativa","input"],["source","Come l’ho conosciuto","input"],["firstContact","Data primo contatto","date"],["status","Stato","select",["Da contattare","Contattato","Preventivo ricevuto","Scelto","Scartato"]]]],
+["Dati professionali",[["specialization","Specializzazione","input"],["services","Servizi offerti","textarea"],["experience","Esperienza / anni attività","input"],["vat","Lavora con partita IVA?","select",["Non indicato","Sì","No"]],["availability","Disponibilità indicativa","input"],["timing","Tempi medi di intervento","input"],["brescia","Lavora su Brescia / provincia?","select",["Non indicato","Sì","No"]],["inspection","Può fare sopralluoghi?","select",["Non indicato","Sì","No"]],["certifications","Può rilasciare certificazioni?","select",["Non indicato","Sì","No"]]]],
+["Preventivi",[["quoteDescription","Descrizione preventivo","textarea"],["linkedProperty","Immobile collegato","input"],["quoteAmount","Importo preventivo","input"],["quoteIncludes","Cosa include","textarea"],["quoteExcludes","Cosa non include","textarea"],["quoteTiming","Tempi stimati","input"],["quoteValidity","Validità preventivo","input"],["quoteNotes","Note sul prezzo","textarea"]]],
+["Valutazione",[["quality","Qualità percepita","input"],["prices","Prezzi","select",["Non indicato","Bassi","Medi","Alti"]],["reliability","Affidabilità","select",["Non indicato","Bassa","Media","Alta"]],["communication","Comunicazione","select",["Non indicato","Scarsa","Normale","Ottima"]],["punctuality","Puntualità","select",["Non indicato","Bassa","Media","Alta"]],["references","Referenze controllate","textarea"],["seenWorks","Lavori già visti","textarea"],["pros","Pro","textarea"],["cons","Contro","textarea"],["risks","Rischi","textarea"],["decision","Decisione finale","textarea"]]],
+["Note",[["notes","Note libere","textarea"],["documents","Documenti da chiedere","textarea"],["nextActions","Prossime azioni","textarea"]]]
+];
+
+const businessFields=[
+["Dati immobile",[["name","Nome operazione","input"],["linkedProperty","Immobile collegato","input"],["zone","Zona","input"],["sqm","Metri quadri","input"],["type","Tipologia","input"],["floor","Piano","input"],["rooms","Numero locali","input"],["propertyState","Stato immobile","input"],["targetBuyer","Target acquirente","textarea"]]],
+["Costi acquisto",[["purchasePrice","Prezzo acquisto","input"],["buyerAgency","Provvigione agenzia","input"],["notary","Notaio","input"],["taxes","Imposte","input"],["sanatoria","Eventuali sanatorie","input"],["technicalCosts","Costi tecnici","input"],["financeCosts","Costi finanziamento","input"],["otherPurchase","Altri costi","input"],["purchaseTotal","Costo acquisto totale","readonly"]]],
+["Ristrutturazione",[["demolition","Demolizioni","input"],["masonry","Opere murarie","input"],["electric","Impianto elettrico","input"],["plumbing","Impianto idraulico","input"],["bathroom","Bagno","input"],["kitchen","Cucina","input"],["floors","Pavimenti","input"],["windows","Serramenti","input"],["doors","Porte interne","input"],["painting","Tinteggiature","input"],["ac","Climatizzazione","input"],["finalCleaning","Pulizie finali","input"],["otherRenovation","Altri costi","input"],["renovationTotal","Costo ristrutturazione totale","readonly"]]],
+["Costi nascosti",[["permits","Permessi","input"],["publicLand","Occupazione suolo pubblico","input"],["scaffold","Ponteggi","input"],["lift","Montacarichi","input"],["waste","Smaltimento macerie","input"],["transport","Trasporti","input"],["safety","Sicurezza","input"],["insurance","Assicurazioni","input"],["unexpected","Imprevisti","input"],["hiddenTotal","Costi nascosti totali","readonly"]]],
+["Costi commerciali",[["homeStaging","Home staging","input"],["rendering","Rendering","input"],["photographer","Fotografo","input"],["marketing","Marketing","input"],["sellerAgency","Agenzia vendita","input"],["otherSelling","Altri costi vendita","input"],["commercialTotal","Costi commerciali totali","readonly"]]],
+["Uscita e capitale",[["expectedSale","Prezzo vendita previsto","input"],["minimumSale","Prezzo vendita minimo accettabile","input"],["optimisticSale","Prezzo vendita ottimistico","input"],["saleTime","Tempo previsto di vendita","input"],["equity","Capitale proprio investito","input"],["finalTaxes","Eventuali tasse sul profitto","input"]]],
+["Calcoli automatici",[["operationTotal","Costo operazione totale","readonly"],["grossMargin","Margine lordo","readonly"],["roi","ROI automatico","readonly"],["roe","ROE automatico","readonly"],["netProfit","Profitto netto","readonly"],["riskLevel","Rischio automatico","readonly"]]],
+["Analisi rischio",[["docOk","Documentazione completa","checkbox"],["urbanOk","Urbanistica verificata","checkbox"],["catastoOk","Catasto verificato","checkbox"],["impiantiOk","Impianti verificati","checkbox"],["quotesOk","Preventivi ricevuti","checkbox"],["companyOk","Impresa selezionata","checkbox"],["demandOk","Domanda di mercato forte","checkbox"],["marginOk","Margine sufficiente","checkbox"],["planBOk","Piano B disponibile","checkbox"]]],
+["Note operative",[["strategy","Strategia operazione","textarea"],["critical","Criticità","textarea"],["todo","Azioni da fare","textarea"],["freeNotes","Appunti liberi","textarea"]]],
+["Stato operazione",[["status","Stato operazione","select",["Studio","Analisi","Offerta inviata","Trattativa","Acquistato","Ristrutturazione","In vendita","Venduto","Archiviato"]],["createdAt","Data creazione","readonly"]]]
+];
+
+function save(){localStorage.setItem("flipping_app_v5",JSON.stringify(appData))}
+function show(id){["home","homeEdit","sectionView","sectionEdit","reader","editor","propertiesView","propertyReader","propertyEditor","professionalsView","proCategoryView","professionalReader","professionalEditor","businessView","businessReader","businessEditor"].forEach(s=>document.getElementById(s).classList.add("hidden"));document.getElementById(id).classList.remove("hidden")}
+function goHome(){renderHome();show("home")}
+function renderHome(){homeTitle.innerText=appData.home.title;homeSubtitle.innerText=appData.home.subtitle;homeSections.innerHTML="";appData.sections.forEach(s=>{let count=s.type==="properties"?appData.properties.length+" immobili salvati":s.type==="professionals"?appData.professionals.length+" professionisti salvati":s.type==="business"?appData.businessPlans.length+" business plan":appData.pages.filter(p=>p.sectionId===s.id&&p.parentId===null).length+" pagine principali";let div=document.createElement("div");div.className="card section-card";div.onclick=()=>s.type==="properties"?openProperties():s.type==="professionals"?openProfessionals():s.type==="business"?openBusinessPlans():openSection(s.id);div.innerHTML=`<div class="icon">${s.icon}</div><div><h2>${s.title}</h2><p>${s.description}</p><p class="small">${count}</p></div>`;homeSections.appendChild(div)})}
+function openHomeEdit(){editHomeTitle.value=appData.home.title;editHomeSubtitle.value=appData.home.subtitle;show("homeEdit")}
+function saveHomeInfo(){appData.home.title=editHomeTitle.value;appData.home.subtitle=editHomeSubtitle.value;save()}
+function addCustomSection(){let title=prompt("Nome nuova sezione:");if(!title)return;appData.sections.push({id:crypto.randomUUID(),type:"theory",title,icon:"📁",description:"Nuova sezione personalizzabile."});save();renderHome()}
+
+function openSection(id){currentSectionId=id;let s=appData.sections.find(x=>x.id===id);sectionTitle.innerText=s.icon+" "+s.title;sectionDescription.innerText=s.description;renderPages();show("sectionView")}
+function backToSection(){openSection(currentSectionId)}
+function openSectionEdit(){let s=appData.sections.find(x=>x.id===currentSectionId);editSectionTitle.value=s.title;editSectionIcon.value=s.icon;editSectionDescription.value=s.description;show("sectionEdit")}
+function saveSectionEdit(){let s=appData.sections.find(x=>x.id===currentSectionId);s.title=editSectionTitle.value;s.icon=editSectionIcon.value;s.description=editSectionDescription.value;save()}
+function deleteCurrentSection(){if(["teoria","immobili","professionisti","business"].includes(currentSectionId)){alert("Questa sezione principale non può essere eliminata.");return}if(!confirm("Eliminare sezione e pagine?"))return;appData.sections=appData.sections.filter(s=>s.id!==currentSectionId);appData.pages=appData.pages.filter(p=>p.sectionId!==currentSectionId);save();goHome()}
+
+function addPage(parentId){let title=prompt("Nome pagina:");if(!title)return;appData.pages.push({id:crypto.randomUUID(),sectionId:currentSectionId,parentId,title,content:""});save();parentId?openPage(parentId):renderPages()}
+function renderPages(){pagesList.innerHTML="";let list=appData.pages.filter(p=>p.sectionId===currentSectionId&&p.parentId===null);if(!list.length){pagesList.innerHTML="<p class='empty'>Nessuna pagina creata.</p>";return}list.forEach(p=>{let children=appData.pages.filter(x=>x.parentId===p.id).length;let div=document.createElement("div");div.className="item";div.onclick=()=>openPage(p.id);div.innerHTML=`<h3>📄 ${p.title}</h3><p>${children} sottopagine</p>`;pagesList.appendChild(div)})}
+function openPage(id){currentPageId=id;let p=appData.pages.find(x=>x.id===id);readerTitle.innerText=p.title;readerContent.innerText=p.content||"Pagina vuota. Premi Modifica per aggiungere testo.";renderBreadcrumb(p);renderSubPages(p.id);show("reader")}
+function openEditor(){let p=appData.pages.find(x=>x.id===currentPageId);pageTitle.value=p.title;pageContent.value=p.content;show("editor")}
+function saveCurrentPage(){let p=appData.pages.find(x=>x.id===currentPageId);p.title=pageTitle.value;p.content=pageContent.value;save()}
+function addSubPage(){addPage(currentPageId)}
+function renderSubPages(parentId){subPagesList.innerHTML="";let list=appData.pages.filter(p=>p.parentId===parentId);if(!list.length){subPagesList.innerHTML="<p class='empty'>Nessuna sottopagina.</p>";return}list.forEach(p=>{let div=document.createElement("div");div.className="item";div.onclick=()=>openPage(p.id);div.innerHTML=`<h3>↳ ${p.title}</h3><p>Apri come pagina libro</p>`;subPagesList.appendChild(div)})}
+function deleteCurrentPage(){if(!confirm("Eliminare pagina e sottopagine?"))return;let ids=getAllChildrenIds(currentPageId);ids.push(currentPageId);appData.pages=appData.pages.filter(p=>!ids.includes(p.id));save();backToSection()}
+function getAllChildrenIds(parentId){let ids=[];appData.pages.filter(p=>p.parentId===parentId).forEach(c=>{ids.push(c.id);ids=ids.concat(getAllChildrenIds(c.id))});return ids}
+function renderBreadcrumb(p){let path=[],cur=p;while(cur){path.unshift(cur.title);cur=appData.pages.find(x=>x.id===cur.parentId)}let s=appData.sections.find(x=>x.id===currentSectionId);breadcrumb.innerText=s.title+" / "+path.join(" / ")}
+
+function parseMoney(v){return Number(String(v||"").replace(/\./g,"").replace(",",".").replace(/[^\d.-]/g,""))||0}
+function formatEuro(n){return n?new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(n):""}
+function calcProperty(p){let total=parseMoney(p.maxOffer)+parseMoney(p.works)+parseMoney(p.agencyCost)+parseMoney(p.taxes);let margin=parseMoney(p.resale)-total;let roi=total>0?(margin/total)*100:0;p.totalInvestment=formatEuro(total);p.margin=formatEuro(margin);p.roi=total>0?roi.toFixed(1)+"%":""}
+function makeField(obj,key,label,type,options,onSave){let value=obj[key]||"";if(type==="checkbox")return `<label class="checkrow"><input id="${key}" type="checkbox" ${value?"checked":""} onchange="${onSave}()"> ${label}</label>`;if(type==="textarea")return `<div class="field-label">${label}</div><textarea id="${key}" oninput="${onSave}()">${value}</textarea>`;if(type==="select")return `<div class="field-label">${label}</div><select id="${key}" onchange="${onSave}()">${options.map(o=>`<option ${value===o?"selected":""}>${o}</option>`).join("")}</select>`;if(type==="readonly")return `<div class="field-label">${label}</div><input id="${key}" class="readonly" value="${value}" readonly>`;return `<div class="field-label">${label}</div><input id="${key}" type="${type==="date"?"date":"text"}" oninput="${onSave}()" value="${value}">`}
+function renderGroups(obj,groups){return groups.map(g=>`<div class="field-group"><div class="field-title">${g[0]}</div>${g[1].map(f=>`<div class="info-row"><div class="info-label">${f[1]}</div><div class="info-value">${f[2]==="checkbox"?(obj[f[0]]?"✅ Sì":"❌ No"):(obj[f[0]]||"-")}</div></div>`).join("")}</div>`).join("")}
+
+function openProperties(){renderProperties();show("propertiesView")}
+function addProperty(){let p={id:crypto.randomUUID(),title:"Nuovo immobile",status:"Da visitare",elevator:"Non indicato"};appData.properties.push(p);save();currentPropertyId=p.id;openPropertyEditor()}
+function renderProperties(){propertiesList.innerHTML="";if(!appData.properties.length){propertiesList.innerHTML="<p class='empty'>Nessun immobile salvato.</p>";return}appData.properties.forEach(p=>{calcProperty(p);let div=document.createElement("div");div.className="item";div.onclick=()=>openProperty(p.id);div.innerHTML=`<h3>🏠 ${p.title||"Immobile senza nome"}</h3><p>${p.area||"Zona non inserita"}</p><span class="badge">${p.status||"Da visitare"}</span><p class="small">Prezzo: ${p.price||"-"} · Margine: ${p.margin||"-"} · ROI: ${p.roi||"-"}</p>`;propertiesList.appendChild(div)})}
+function openProperty(id){currentPropertyId=id;let p=appData.properties.find(x=>x.id===id);calcProperty(p);propertyReaderTitle.innerText="🏠 "+(p.title||"Immobile senza nome");propertyReaderContent.innerHTML=renderGroups(p,propertyFields);show("propertyReader")}
+function openPropertyEditor(){let p=appData.properties.find(x=>x.id===currentPropertyId);calcProperty(p);propertyForm.innerHTML=propertyFields.map(g=>`<div class="field-group"><div class="field-title">${g[0]}</div>${g[1].map(f=>makeField(p,f[0],f[1],f[2],f[3],"saveCurrentProperty")).join("")}</div>`).join("");show("propertyEditor")}
+function saveCurrentProperty(){let p=appData.properties.find(x=>x.id===currentPropertyId);propertyFields.flatMap(g=>g[1]).forEach(f=>{if(f[2]!=="readonly"&&document.getElementById(f[0]))p[f[0]]=f[2]==="checkbox"?document.getElementById(f[0]).checked:document.getElementById(f[0]).value});calcProperty(p);["totalInvestment","margin","roi"].forEach(k=>{if(document.getElementById(k))document.getElementById(k).value=p[k]||""});save()}
+function deleteCurrentProperty(){if(!confirm("Eliminare questo immobile?"))return;appData.properties=appData.properties.filter(p=>p.id!==currentPropertyId);save();openProperties()}
+
+function openProfessionals(){renderProCategories();show("professionalsView")}
+function renderProCategories(){proCategoriesList.innerHTML="";appData.proCategories.forEach(c=>{let count=appData.professionals.filter(p=>p.categoryId===c.id).length;let div=document.createElement("div");div.className="item";div.onclick=()=>openProCategory(c.id);div.innerHTML=`<h3>👷 ${c.name}</h3><p>${count} professionisti salvati</p>`;proCategoriesList.appendChild(div)})}
+function addProCategory(){let name=prompt("Nome categoria:");if(!name)return;appData.proCategories.push({id:crypto.randomUUID(),name});save();renderProCategories()}
+function openProCategory(id){currentProCategoryId=id;let c=appData.proCategories.find(x=>x.id===id);proCategoryTitle.innerText="👷 "+c.name;renderProfessionals();show("proCategoryView")}
+function renameProCategory(){let c=appData.proCategories.find(x=>x.id===currentProCategoryId);let name=prompt("Nuovo nome categoria:",c.name);if(!name)return;c.name=name;appData.professionals.filter(p=>p.categoryId===c.id).forEach(p=>p.categoryName=name);save();openProCategory(c.id)}
+function deleteProCategory(){if(!confirm("Eliminare categoria e professionisti?"))return;appData.proCategories=appData.proCategories.filter(c=>c.id!==currentProCategoryId);appData.professionals=appData.professionals.filter(p=>p.categoryId!==currentProCategoryId);save();openProfessionals()}
+function addProfessional(){let c=appData.proCategories.find(x=>x.id===currentProCategoryId);let p={id:crypto.randomUUID(),categoryId:c.id,categoryName:c.name,name:"Nuovo professionista",status:"Da contattare"};appData.professionals.push(p);save();currentProfessionalId=p.id;openProfessionalEditor()}
+function renderProfessionals(){professionalsList.innerHTML="";let list=appData.professionals.filter(p=>p.categoryId===currentProCategoryId);if(!list.length){professionalsList.innerHTML="<p class='empty'>Nessun professionista salvato.</p>";return}list.forEach(p=>{let div=document.createElement("div");div.className="item";div.onclick=()=>openProfessional(p.id);div.innerHTML=`<h3>👷 ${p.name||"Senza nome"}</h3><p>${p.phone||"Telefono non inserito"}</p><span class="badge">${p.status||"Da contattare"}</span><p class="small">Preventivo: ${p.quoteAmount||"-"} · Prezzi: ${p.prices||"-"} · Affidabilità: ${p.reliability||"-"}</p>`;professionalsList.appendChild(div)})}
+function openProfessional(id){currentProfessionalId=id;let p=appData.professionals.find(x=>x.id===id);professionalReaderTitle.innerText="👷 "+(p.name||"Professionista senza nome");professionalReaderContent.innerHTML=renderGroups(p,professionalFields);show("professionalReader")}
+function openProfessionalEditor(){let p=appData.professionals.find(x=>x.id===currentProfessionalId);professionalForm.innerHTML=professionalFields.map(g=>`<div class="field-group"><div class="field-title">${g[0]}</div>${g[1].map(f=>makeField(p,f[0],f[1],f[2],f[3],"saveCurrentProfessional")).join("")}</div>`).join("");show("professionalEditor")}
+function saveCurrentProfessional(){let p=appData.professionals.find(x=>x.id===currentProfessionalId);professionalFields.flatMap(g=>g[1]).forEach(f=>{if(f[2]!=="readonly"&&document.getElementById(f[0]))p[f[0]]=document.getElementById(f[0]).value});save()}
+function deleteCurrentProfessional(){if(!confirm("Eliminare questo professionista?"))return;appData.professionals=appData.professionals.filter(p=>p.id!==currentProfessionalId);save();openProCategory(currentProCategoryId)}
+
+function calcBusiness(b){
+let sum=keys=>keys.reduce((a,k)=>a+parseMoney(b[k]),0);
+b.purchaseTotal=formatEuro(sum(["purchasePrice","buyerAgency","notary","taxes","sanatoria","technicalCosts","financeCosts","otherPurchase"]));
+b.renovationTotal=formatEuro(sum(["demolition","masonry","electric","plumbing","bathroom","kitchen","floors","windows","doors","painting","ac","finalCleaning","otherRenovation"]));
+b.hiddenTotal=formatEuro(sum(["permits","publicLand","scaffold","lift","waste","transport","safety","insurance","unexpected"]));
+b.commercialTotal=formatEuro(sum(["homeStaging","rendering","photographer","marketing","sellerAgency","otherSelling"]));
+let operation=sum(["purchasePrice","buyerAgency","notary","taxes","sanatoria","technicalCosts","financeCosts","otherPurchase","demolition","masonry","electric","plumbing","bathroom","kitchen","floors","windows","doors","painting","ac","finalCleaning","otherRenovation","permits","publicLand","scaffold","lift","waste","transport","safety","insurance","unexpected","homeStaging","rendering","photographer","marketing","sellerAgency","otherSelling"]);
+let gross=parseMoney(b.expectedSale)-operation;let roi=operation>0?(gross/operation)*100:0;let roe=parseMoney(b.equity)>0?(gross/parseMoney(b.equity))*100:0;let net=gross-parseMoney(b.finalTaxes);
+b.operationTotal=formatEuro(operation);b.grossMargin=formatEuro(gross);b.roi=operation>0?roi.toFixed(1)+"%":"";b.roe=parseMoney(b.equity)>0?roe.toFixed(1)+"%":"";b.netProfit=formatEuro(net);
+let checks=["docOk","urbanOk","catastoOk","impiantiOk","quotesOk","companyOk","demandOk","marginOk","planBOk"].filter(k=>b[k]).length;
+b.riskLevel=checks>=7?"Rischio basso":checks>=4?"Rischio medio":"Rischio alto";
+}
+function openBusinessPlans(){renderBusinessPlans();show("businessView")}
+function addBusiness(){let b={id:crypto.randomUUID(),name:"Nuovo Business Plan",status:"Studio",createdAt:new Date().toLocaleDateString("it-IT")};appData.businessPlans.push(b);save();currentBusinessId=b.id;openBusinessEditor()}
+function renderBusinessPlans(){businessList.innerHTML="";if(!appData.businessPlans.length){businessList.innerHTML="<p class='empty'>Nessun Business Plan creato.</p>";return}appData.businessPlans.forEach(b=>{calcBusiness(b);let div=document.createElement("div");div.className="item";div.onclick=()=>openBusiness(b.id);div.innerHTML=`<h3>📊 ${b.name||"Business Plan senza nome"}</h3><p>${b.linkedProperty||"Immobile non collegato"}</p><span class="badge">${b.status||"Studio"}</span><p class="small">Investimento: ${b.operationTotal||"-"} · Margine: ${b.grossMargin||"-"} · ROI: ${b.roi||"-"} · ROE: ${b.roe||"-"}</p>`;businessList.appendChild(div)})}
+function openBusiness(id){currentBusinessId=id;let b=appData.businessPlans.find(x=>x.id===id);calcBusiness(b);businessReaderTitle.innerText="📊 "+(b.name||"Business Plan");businessReaderContent.innerHTML=renderGroups(b,businessFields);show("businessReader")}
+function openBusinessEditor(){let b=appData.businessPlans.find(x=>x.id===currentBusinessId);calcBusiness(b);businessForm.innerHTML=businessFields.map(g=>`<div class="field-group"><div class="field-title">${g[0]}</div>${g[1].map(f=>makeField(b,f[0],f[1],f[2],f[3],"saveCurrentBusiness")).join("")}</div>`).join("");show("businessEditor")}
+function saveCurrentBusiness(){let b=appData.businessPlans.find(x=>x.id===currentBusinessId);businessFields.flatMap(g=>g[1]).forEach(f=>{if(f[2]!=="readonly"&&document.getElementById(f[0]))b[f[0]]=f[2]==="checkbox"?document.getElementById(f[0]).checked:document.getElementById(f[0]).value});calcBusiness(b);["purchaseTotal","renovationTotal","hiddenTotal","commercialTotal","operationTotal","grossMargin","roi","roe","netProfit","riskLevel"].forEach(k=>{if(document.getElementById(k))document.getElementById(k).value=b[k]||""});save()}
+function deleteCurrentBusiness(){if(!confirm("Eliminare questo Business Plan?"))return;appData.businessPlans=appData.businessPlans.filter(b=>b.id!==currentBusinessId);save();openBusinessPlans()}
+
+save();renderHome();
+</script>
+</body>
+</html>
